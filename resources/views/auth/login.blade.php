@@ -4,13 +4,22 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
+
+            @if(Auth::check())
+            <script>window.location = "{{ route('home') }}";</script>
+            @endif
             @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             @endif
-
+            @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
             <div class="card">
                 <div class="card-header">{{ __('login') }}</div>
 
@@ -50,7 +59,7 @@
                         <div class="row mb-0">
                             <div class="col-md-8 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
-                                    {{ __('login') }}
+                                    {{ __('Login') }}
                                 </button>
 
                                

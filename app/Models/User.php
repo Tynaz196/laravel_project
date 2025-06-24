@@ -3,26 +3,25 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use App\Enums\UserStatus;
 
 class User extends Authenticatable
 {
-   
+//    {
+//     protected $table = 'nguoi_dung'; // ánh xạ model User tới bảng 'nguoi_dung'
+// }
+
      protected $fillable = [
         'first_name', 'last_name', 'email', 'password', 'status',
     ];
 
-    protected $casts = [
+     protected $casts = [
         'status' => UserStatus::class,
     ];
 
-    protected function password(): Attribute
-    {
-        return Attribute::make(
-            set: fn ($value) => bcrypt($value), 
-        );
-    }
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
 
    
 }

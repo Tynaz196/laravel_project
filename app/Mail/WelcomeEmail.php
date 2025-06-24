@@ -17,7 +17,7 @@ class WelcomeEmail extends Mailable
     public function build()
     {
         return $this->view('emails.welcome')
-                    ->subject('Chào mừng từ Laravel App')
+                    ->subject('Chào bạn!')
                     ->with([
                         'timestamp' => now()->format('d/m/Y H:i:s')
                     ]);
