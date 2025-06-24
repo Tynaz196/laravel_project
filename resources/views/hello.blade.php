@@ -1,24 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Name</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-        }
-        h2 {
-            font-size: 48px;
-            color: yellow;
-        }
-    </style>
-</head>
-<body>
-    <h2>Nguyễn Trọng Thuận</h2>
-</body>
-</html>
+@extends('layouts.master')
+
+@section('title', 'Trang chủ')
+
+@section('content')
+    <div style="padding: 20px;">
+        <h2>Chào mừng đến với Laravel!</h2>
+        <p>Đây là nội dung trang chủ.</p>
+
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+
+    </div>
+@endsection

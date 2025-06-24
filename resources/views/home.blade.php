@@ -1,18 +1,23 @@
-@extends('layouts.master')
-
-@section('title', 'Trang chủ')
+@extends('layouts.app')
 
 @section('content')
-    <div style="padding: 20px;">
-        <h2>Chào mừng đến với Laravel!</h2>
-        <p>Đây là nội dung trang chủ.</p>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">{{ __('Dashboard') }}</div>
 
-        @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
+                <div class="card-body">
+                    @if (session('status'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
+                    {{ __('You are logged in!') }}
+                </div>
             </div>
-        @endif
-
-
+        </div>
     </div>
+</div>
 @endsection
