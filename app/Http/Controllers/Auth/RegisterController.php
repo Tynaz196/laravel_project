@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -9,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Jobs\SendWelcomeEmail;
+use App\Enums\UserStatus;
 
 class RegisterController extends Controller
 {
@@ -30,7 +30,7 @@ class RegisterController extends Controller
         'last_name'  => $request->last_name,
         'email'      => $request->email,
         'password'   => Hash::make($request->password),
-        'status'     => 0,
+        'status'     => UserStatus::PENDING->value,
         'role'       => 'user',
     ]);
 
