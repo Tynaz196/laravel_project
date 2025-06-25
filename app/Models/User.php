@@ -8,7 +8,7 @@ use App\Enums\UserStatus;
 class User extends Authenticatable
 {
 //    {
-//     protected $table = 'nguoi_dung'; // ánh xạ model User tới bảng 'nguoi_dung'
+//     protected $table = 'cache'; // ánh xạ model cache tới bảng 'cache'
 // }
 
      protected $fillable = [

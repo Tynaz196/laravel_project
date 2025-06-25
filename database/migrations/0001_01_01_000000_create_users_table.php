@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('first_name', 30);
             $table->string('last_name', 30);
-            $table->string('email', 100)->unique();
+            $table->string('email', 100)->unique();// không thì không thể đăng ký tài khoản với email đã tồn tại
             $table->timestamp('email_verified_at')->nullable();
             $table->enum('status', ['0', '1', '2', '3'])->default('0');
             $table->string('password');

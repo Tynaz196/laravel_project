@@ -24,7 +24,7 @@ class RegisterRequest extends FormRequest
         return [
             'first_name' => ['required', 'string', 'max:30'],
             'last_name' => ['required', 'string', 'max:30'],
-            'email' => ['required', 'email:rfc,dns', 'max:100', 'unique:users,email'],
+            'email' => ['required', 'email:rfc,dns', 'max:100', 'unique:users,email'], //từ 3 role trở lên sài mảng không sài chuỗi
             'password' => [
                 'required',
                 'string',
@@ -33,7 +33,7 @@ class RegisterRequest extends FormRequest
                 'regex:/[a-z]/',      // Ít nhất một chữ thường
                 'regex:/[0-9]/',      // Ít nhất một số
                 'regex:/[@$!%*#?&]/', // Ít nhất một ký tự đặc biệt
-                'confirmed'
+                'confirmed',
             ],
         ];
     }
