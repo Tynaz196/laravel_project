@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
+
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -31,7 +33,7 @@ class RegisterController extends Controller
         'email'      => $request->email,
         'password'   => Hash::make($request->password),
         'status'     => UserStatus::PENDING->value,
-        'role'       => 'user',
+        'role'       => UserRole::USER->value,
     ]);
 
    

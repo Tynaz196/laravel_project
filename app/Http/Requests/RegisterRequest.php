@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
+use Mockery\Generator\StringManipulation\Pass\Pass;
 
 class RegisterRequest extends FormRequest
 {
@@ -29,11 +31,11 @@ class RegisterRequest extends FormRequest
                 'required',
                 'string',
                 'min:8',
-                'regex:/[A-Z]/',      // Ít nhất một chữ hoa
-                'regex:/[a-z]/',      // Ít nhất một chữ thường
-                'regex:/[0-9]/',      // Ít nhất một số
-                'regex:/[@$!%*#?&]/', // Ít nhất một ký tự đặc biệt
                 'confirmed',
+                Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
             ],
         ];
     }
