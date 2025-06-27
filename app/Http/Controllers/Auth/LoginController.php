@@ -37,13 +37,13 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout'); 
+        $this->middleware('auth')->only('logout');
     }
 
     public function showLoginForm()
-{
-    return response()->view('auth.login')
-        ->header('Cache-Control', 'no-cache, no-store')
-        ->header('Expires', '0');
-}
+    {
+        return response()->view('auth.login')
+            ->header('Cache-Control', 'no-cache, no-store')
+            ->header('Expires', '0');
+    }
 }

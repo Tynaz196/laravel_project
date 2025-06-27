@@ -10,16 +10,14 @@ class WelcomeEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function build()
     {
         return $this->view('emails.welcome')
-                    ->subject('Chào bạn!')
-                    ->with([
-                        'timestamp' => now()->format('d/m/Y H:i:s')
-                    ]);
+            ->subject('Chào bạn!')
+            ->with([
+                'timestamp' => now()->format('d/m/Y H:i:s')
+            ]);
     }
 }

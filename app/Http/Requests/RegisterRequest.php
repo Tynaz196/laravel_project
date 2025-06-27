@@ -21,12 +21,17 @@ class RegisterRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-     public function rules(): array
+    public function rules(): array
     {
         return [
             'first_name' => ['required', 'string', 'max:30'],
             'last_name' => ['required', 'string', 'max:30'],
-            'email' => ['required', 'email:rfc,dns', 'max:100', 'unique:users,email'], //từ 3 role trở lên sài mảng không sài chuỗi
+            'email' => [
+                'required',
+                'email:rfc,dns',
+                'max:100',
+                'unique:users,email'
+            ],
             'password' => [
                 'required',
                 'string',
@@ -39,6 +44,4 @@ class RegisterRequest extends FormRequest
             ],
         ];
     }
-
-  
 }

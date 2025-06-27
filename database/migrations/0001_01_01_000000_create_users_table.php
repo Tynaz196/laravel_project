@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-         Schema::create('users', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name', 30);
-            $table->string('last_name', 30);
-            $table->string('email', 100)->unique();// không thì không thể đăng ký tài khoản với email đã tồn tại
+            $table->string('first_name', 30)->nullable();
+            $table->string('last_name', 30)->nullable();
+            $table->string('email', 100)->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->enum('status', ['0', '1', '2', '3'])->default('0');
-            $table->string('password');
-            $table->enum('role', ['0', '1'])->default('0');
+            $table->tinyInteger('status')->default(0);
+            $table->string('password')->nullable();
+            $table->string('role')->default('user');
             $table->rememberToken();
             $table->timestamps();
         });

@@ -16,7 +16,7 @@ class RegisterController extends Controller
 {
     use RegistersUsers;
 
-    
+
 
     /**
      * Get a validator for an incoming registration request.
@@ -24,35 +24,33 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-   public function register(RegisterRequest $request)
-{
-    
-    $user = User::create([
-        'first_name' => $request->first_name,
-        'last_name'  => $request->last_name,
-        'email'      => $request->email,
-        'password'   => Hash::make($request->password),
-        'status'     => UserStatus::PENDING->value,
-        'role'       => UserRole::USER->value,
-    ]);
+    public function register(RegisterRequest $request)
+    {
 
-   
+        $user = User::create([
+            'first_name' => $request->first_name,
+            'last_name'  => $request->last_name,
+            'email'      => $request->email,
+            'password'   => Hash::make($request->password),
+            'status'     => UserStatus::PENDING->value,
+            'role'       => UserRole::USER->value,
+        ]);
 
-    /**
-     * The user has been registered.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  mixed  $user
-     * @return \Illuminate\Http\RedirectResponse
-     */
-       
+
+
+        /**
+         * The user has been registered.
+         *
+         * @param  \Illuminate\Http\Request  $request
+         * @param  mixed  $user
+         * @return \Illuminate\Http\RedirectResponse
+         */
+
 
         // Gửi email chào mừng qua Mailpit
         SendWelcomeEmail::dispatch($user);
 
         return to_route('login')
             ->with('success', 'Đăng ký tài khoản thành công! ');
-    
-}
-
+    }
 }

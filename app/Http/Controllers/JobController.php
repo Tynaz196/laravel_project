@@ -12,7 +12,6 @@ class JobController extends Controller
     {
         $emailJob = new SendWelcomeEmail();
         dispatch($emailJob);
-        
         return redirect()->back()->with('success', 'Email đã được đưa vào hàng đợi và sẽ được gửi trong vài phút.');
     }
 }
