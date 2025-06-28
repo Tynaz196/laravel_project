@@ -18,6 +18,6 @@ class ProfileController extends Controller
     {
         Auth::user()->update($request->validated());
 
-        return redirect()->route('profile.edit')->with('status', 'Cập nhật hồ sơ thành công!');
+        return to_route('profile.edit')->with('status', 'Cập nhật hồ sơ thành công!');
     }
 }
