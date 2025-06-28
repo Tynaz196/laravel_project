@@ -8,15 +8,12 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
-use Illuminate\Support\Facades\Auth;
 use App\Jobs\SendWelcomeEmail;
 use App\Enums\UserStatus;
 
 class RegisterController extends Controller
 {
     use RegistersUsers;
-
-
 
     /**
      * Get a validator for an incoming registration request.
@@ -34,6 +31,7 @@ class RegisterController extends Controller
             'password'   => Hash::make($request->password),
             'status'     => UserStatus::PENDING->value,
             'role'       => UserRole::USER->value,
+            'address'    => null,
         ]);
 
 

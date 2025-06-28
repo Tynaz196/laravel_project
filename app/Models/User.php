@@ -22,12 +22,15 @@ class User extends Authenticatable
         'email',
         'password',
         'status',
+        'role',
+        'address',
     ];
 
     protected $casts = [
         'status' => UserStatus::class,
         'role' => UserRole::class,
     ];
+
 
 
     protected $hidden = [
@@ -37,6 +40,6 @@ class User extends Authenticatable
 
     public function getNameAttribute(): string
     {
-        return  $this->first_name . ' ' . $this->last_name;
+        return "{$this->first_name} {$this->last_name}";
     }
 }
