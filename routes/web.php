@@ -8,7 +8,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\PostController;
 
 
 Route::middleware(['guest'])->group(function () {
@@ -25,7 +25,7 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
