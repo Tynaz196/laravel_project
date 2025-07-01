@@ -7,17 +7,11 @@ use Illuminate\Validation\Rules\Password;
 
 class RegisterRequest extends FormRequest
 {
-    /**
-     * Cho phép gửi request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Quy tắc validate.
-     */
     public function rules(): array
     {
         return [
@@ -42,9 +36,6 @@ class RegisterRequest extends FormRequest
         ];
     }
 
-    /**
-     * Thông báo lỗi tiếng Việt.
-     */
     public function messages(): array
     {
         return [

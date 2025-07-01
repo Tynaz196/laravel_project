@@ -24,9 +24,6 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
-    /**
-     * Hiển thị form đăng nhập.
-     */
     public function showLoginForm()
     {
         return response()->view('auth.login')
@@ -34,9 +31,6 @@ class LoginController extends Controller
             ->header('Expires', '0');
     }
 
-    /**
-     * Xử lý đăng nhập với LoginRequest.
-     */
     public function login(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
@@ -56,9 +50,6 @@ class LoginController extends Controller
         ])->withInput();
     }
 
-    /**
-     * Xử lý đăng xuất.
-     */
     public function logout(Request $request)
     {
         Auth::logout();

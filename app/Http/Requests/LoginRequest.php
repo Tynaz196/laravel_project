@@ -6,17 +6,11 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class LoginRequest extends FormRequest
 {
-    /**
-     * Xác định người dùng có được phép gửi request này không.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Quy tắc validate.
-     */
     public function rules(): array
     {
         return [
@@ -25,9 +19,6 @@ class LoginRequest extends FormRequest
         ];
     }
 
-    /**
-     * Thông báo lỗi bằng tiếng Việt.
-     */
     public function messages(): array
     {
         return [

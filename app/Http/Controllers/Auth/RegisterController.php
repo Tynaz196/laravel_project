@@ -27,10 +27,8 @@ class RegisterController extends Controller
 
         DB::beginTransaction();
         try {
-            // Validate the request data
             $request->validated();
 
-            // Create the user
             $user = User::create([
                 'first_name' => $request->first_name,
                 'last_name'  => $request->last_name,
@@ -48,7 +46,7 @@ class RegisterController extends Controller
             return to_route('login')
                 ->with('success', 'Đăng ký tài khoản thành công! ');
         } catch (\Exception $e) {
-            // Rollback the transaction in case of error
+            // trường hợp lỗi xảy ra, rollback
             DB::rollBack();
             return back()->withErrors(['error' => 'Đăng ký không thành công. Vui lòng thử lại.']);
         }
