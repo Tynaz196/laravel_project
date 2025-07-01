@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
-use Illuminate\Http\Request;
-use \App\Jobs\SendResetPasswordEmail;
-use \App\Models\User;
+use App\Http\Requests\ForgotPasswordRequest;
 
 class ForgotPasswordController extends Controller
 {
@@ -20,21 +18,22 @@ class ForgotPasswordController extends Controller
     | your application to your users. Feel free to explore this trait.
     |
     */
-    public function sendResetLinkEmailJob(Request $request)
+    public function sendResetLinkEmailJob(ForgotPasswordRequest $request)
     {
-        $this->validateEmail($request);
+        $credentials = $request->validated();
 
-        $credentials = $this->credentials($request);
-        $user = User::where('email', $credentials['email'])->first();
+        $user = \App\Models\User::where('email', $credentials['email'])->first();
 
         if ($user) {
             $token = app('auth.password.broker')->createToken($user);
-            SendResetPasswordEmail::dispatch($user->email, $token);
+            \App\Jobs\SendResetPasswordEmail::dispatch($user->email, $token);
 
-            return back()->with('status', trans('passwords.sent'));
+            return back()->with('status', 'Chúng tôi đã gửi email hướng dẫn đặt lại mật khẩu!');
         }
 
-        return back()->withErrors(['email' => trans('passwords.user')]);
+        return back()->withErrors([
+            'email' => 'Không tìm thấy người dùng với địa chỉ email này.',
+        ]);
     }
     use SendsPasswordResetEmails;
 }

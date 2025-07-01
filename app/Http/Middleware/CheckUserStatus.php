@@ -30,6 +30,12 @@ class CheckUserStatus
                 case UserStatus::BLOCKED:
                     Auth::logout();
                     return to_route('login')->with('error', 'Tài khoản của bạn đã bị khóa.');
+                case UserStatus::APPROVED:
+
+                    break;
+                default:
+                    Auth::logout();
+                    return to_route('login')->with('error', 'Trạng thái tài khoản không hợp lệ.');
             }
         }
         return $next($request);

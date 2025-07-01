@@ -25,7 +25,7 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
-Route::middleware(['auth', 'check.user.status'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -33,4 +33,4 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-Route::get('/test-email', [JobController::class, 'processQueue'])->name('test.email');
+// Route::get('/test-email', [JobController::class, 'processQueue'])->name('test.email');

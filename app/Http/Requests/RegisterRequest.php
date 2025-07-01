@@ -4,12 +4,11 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
-use Mockery\Generator\StringManipulation\Pass\Pass;
 
 class RegisterRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Cho phép gửi request.
      */
     public function authorize(): bool
     {
@@ -17,9 +16,7 @@ class RegisterRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * Quy tắc validate.
      */
     public function rules(): array
     {
@@ -42,6 +39,45 @@ class RegisterRequest extends FormRequest
                     ->numbers()
                     ->symbols()
             ],
+        ];
+    }
+
+    /**
+     * Thông báo lỗi tiếng Việt.
+     */
+    public function messages(): array
+    {
+        return [
+            'first_name.required' => 'Bạn chưa nhập tên.',
+            'first_name.max' => 'Tên không được vượt quá :max ký tự.',
+
+            'last_name.required' => 'Bạn chưa nhập họ.',
+            'last_name.max' => 'Họ không được vượt quá :max ký tự.',
+
+            'email.required' => 'Bạn chưa nhập địa chỉ email.',
+            'email.email' => 'Địa chỉ email không đúng định dạng.',
+            'email.max' => 'Email không được vượt quá :max ký tự.',
+            'email.unique' => 'Email này đã được sử dụng.',
+
+            'password.required' => 'Bạn chưa nhập mật khẩu.',
+            'password.min' => 'Mật khẩu phải có ít nhất :min ký tự.',
+            'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
+            'password.mixed' => 'Mật khẩu phải có chữ hoa và chữ thường.',
+            'password.numbers' => 'Mật khẩu phải chứa ít nhất một chữ số.',
+            'password.symbols' => 'Mật khẩu phải chứa ít nhất một ký tự đặc biệt.',
+        ];
+    }
+
+    /**
+     * Gán tên dễ hiểu cho các trường.
+     */
+    public function attributes(): array
+    {
+        return [
+            'first_name' => 'tên',
+            'last_name' => 'họ',
+            'email' => 'địa chỉ email',
+            'password' => 'mật khẩu',
         ];
     }
 }
