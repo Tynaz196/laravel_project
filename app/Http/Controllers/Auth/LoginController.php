@@ -33,20 +33,15 @@ class LoginController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('email', 'password') + ['status' => UserStatus::APPROVED];
 
         if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            if ($user->status === UserStatus::APPROVED) {
-                return redirect()->intended($this->redirectTo);
-            }
-            Auth::logout();
-            return back()->withErrors(['email' => 'Tài khoản không hợp lệ'])->withInput();
+            return redirect()->intended($this->redirectTo);
         }
 
         // Đăng nhập thất bại
         return back()->withErrors([
-            'email' => 'Thông tin đăng nhập không đúng.',
+            'email' => 'Thông tin đăng nhập không đúng hoặc tài khoản chưa được phê duyệt.',
         ])->withInput();
     }
 

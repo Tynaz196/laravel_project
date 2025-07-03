@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use App\Http\Requests\ForgotPasswordRequest;
+use App\Models\User;
+use App\Jobs\SendResetPasswordEmail;
 
 class ForgotPasswordController extends Controller
 {
@@ -22,11 +24,11 @@ class ForgotPasswordController extends Controller
     {
         $credentials = $request->validated();
 
-        $user = \App\Models\User::where('email', $credentials['email'])->first();
+        $user = User::where('email', $credentials['email'])->first();
 
         if ($user) {
             $token = app('auth.password.broker')->createToken($user);
-            \App\Jobs\SendResetPasswordEmail::dispatch($user->email, $token);
+            SendResetPasswordEmail::dispatch($user->email, $token);
 
             return back()->with('status', 'Chúng tôi đã gửi email hướng dẫn đặt lại mật khẩu!');
         }

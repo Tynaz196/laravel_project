@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Post extends Model
+class Post extends Model implements HasMedia
 {
     use InteractsWithMedia;
 
@@ -24,6 +24,7 @@ class Post extends Model
 
     protected $casts = [
         'status' => PostStatus::class,
+        'publish_date' => 'datetime',
     ];
 
     public function user()
@@ -31,22 +32,20 @@ class Post extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Scope: Bài viết đã đăng
-    public function scopePosted($query)
+    public function scopePending($query)
     {
-        return $query->where('status', PostStatus::POST);
+        return $query->where('status', PostStatus::PENDING);
     }
 
-    // Scope: Bài viết mới
-    public function scopeNewPost($query)
+    public function scopeApproved($query)
     {
-        return $query->where('status', PostStatus::NEWPOST);
+        return $query->where('status', PostStatus::APPROVED);
     }
 
-    // Scope: Bài viết được cập nhật
-    public function scopeUpdated($query)
+
+    public function scopeDennied($query)
     {
-        return $query->where('status', PostStatus::UPDATE);
+        return $query->where('status', PostStatus::DENNIED);
     }
 
     protected static function booted()
@@ -64,19 +63,18 @@ class Post extends Model
 
     protected static function generateUniqueSlug(string $title, $ignoreId = null): string
     {
-        $slug = Str::slug($title);
-        $originalSlug = $slug;
-        $count = 1;
+        $Slug = Str::slug($title);
 
-        while (static::query()
-            ->where('slug', $slug)
+        if (!static::query()
+            ->where('slug', $Slug)
             ->when($ignoreId, fn($query) => $query->where('id', '!=', $ignoreId))
-            ->exists()
-        ) {
-            $slug = $originalSlug . '-' . $count++;
+            ->exists()) {
+            return $Slug;
         }
 
-        return $slug;
+        // Nếu đã tồn tại thì thêm MD5 hash để đảm bảo độc nhất
+        $uniqueHash = substr(md5($title . time() . uniqid()), 0, 8);
+        return $Slug . '-' . $uniqueHash;
     }
 
     public function getThumbnailUrlAttribute(): ?string
