@@ -21,11 +21,40 @@ class StorePostRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'title'       => ['required', 'string', 'max:100'],
             'description' => ['nullable', 'string', 'max:200'],
             'content'     => ['required', 'string'],
-            'thumbnail'  =>  ['required', 'image', 'max:2048'],
+        ];
+
+        // Thumbnail chỉ bắt buộc khi tạo mới (POST)
+        if ($this->isMethod('POST')) {
+            $rules['thumbnail'] = ['required', 'image', 'max:2048'];
+        } else {
+            $rules['thumbnail'] = ['nullable', 'image', 'max:2048'];
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Get the custom messages for the validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Bạn chưa nhập tiêu đề bài viết.',
+            'title.max' => 'Tiêu đề không được vượt quá :max ký tự.',
+
+            'description.max' => 'Mô tả không được vượt quá :max ký tự.',
+
+            'content.required' => 'Bạn chưa nhập nội dung bài viết.',
+
+            'thumbnail.required' => 'Bạn chưa chọn ảnh thumbnail.',
+            'thumbnail.image' => 'File phải là hình ảnh.',
+            'thumbnail.max' => 'Kích thước ảnh không được vượt quá :max KB.',
         ];
     }
 }

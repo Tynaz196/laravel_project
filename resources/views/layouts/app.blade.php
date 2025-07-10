@@ -15,6 +15,36 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
     
+    <!-- Summernote CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs5.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('css/custom-layout.css') }}">
+    
+    <!-- Fix Summernote double textarea -->
+    <style>
+        /* Ẩn textarea gốc khi Summernote active */
+        .note-editor + textarea,
+        .note-editor ~ textarea {
+            display: none !important;
+        }
+        
+        /* Ngăn chặn duplicate editor */
+        .note-editing-area {
+            position: relative;
+        }
+        
+        /* Fix layout */
+        .note-editor {
+            margin-bottom: 0;
+        }
+        
+        /* Prevent multiple instances */
+        textarea#content.note-editable {
+            display: none !important;
+        }
+    </style>
+    
     @stack('styles')
 </head>
 <body>
@@ -50,8 +80,7 @@
                                 </li>
                             @endif
                         @else
-                            <li class="nav-item"><a class="nav-link" href="{{ route('posts.index') }}">Bài viết</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ route('posts.create') }}">Tạo bài viết</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('posts.index') }}">Xem danh sách bài viết</a></li>
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name}}
@@ -94,6 +123,9 @@
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+    
+    <!-- Summernote JS -->
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs5.min.js"></script>
     
     @stack('scripts')
 </body>

@@ -14,9 +14,9 @@
         </div>
     @endif
 
-    <form action="{{ route('posts.update', $post->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('posts.update', $post) }}" method="POST" enctype="multipart/form-data">
         @csrf
-        @method('PUT')
+        @method('PATCH')
         
         <div class="mb-3">
             <label for="title" class="form-label">Tiêu đề <span class="text-danger">*</span></label>
@@ -55,7 +55,7 @@
             @endif
             <input type="file" class="form-control @error('thumbnail') is-invalid @enderror" 
                    id="thumbnail" name="thumbnail" accept="image/*">
-            <small class="form-text text-muted">Chọn ảnh mới để thay thế ảnh hiện tại (nếu có)</small>
+            <small class="form-text text-muted">Chọn ảnh mới để thay thế ảnh hiện tại (tùy chọn)</small>
             @error('thumbnail')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -72,19 +72,52 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        $('#content').summernote({
-            height: 300,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'clear']],
-                ['fontname', ['fontname']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture', 'video']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ]
-        });
+        console.log('Document ready');
+        console.log('jQuery version:', $.fn.jquery);
+        console.log('Summernote available:', typeof $.fn.summernote !== 'undefined');
+        
+        // Fix Bootstrap tooltip conflict
+        $.fn.tooltip.Constructor.Default.sanitize = false;
+        
+        // Đợi một chút để đảm bảo tất cả CSS đã load
+        setTimeout(function() {
+            if (typeof $.fn.summernote !== 'undefined') {
+                console.log('Initializing Summernote...');
+                
+                // Destroy tất cả instance cũ
+                $('.note-editor').remove();
+                $('#content').removeClass('note-editable');
+                $('#content').show();
+                
+                $('#content').summernote({
+                    height: 300,
+                    placeholder: 'Nhập nội dung bài viết...',
+                    disableResizeEditor: true,
+                    toolbar: [
+                        ['style', ['style']],
+                        ['font', ['bold', 'underline', 'clear']],
+                        ['fontname', ['fontname']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['table', ['table']],
+                        ['insert', ['link', 'picture']],
+                        ['view', ['fullscreen', 'codeview']]
+                    ],
+                    callbacks: {
+                        onInit: function() {
+                            console.log('Summernote initialized successfully');
+                            // Ẩn textarea gốc sau khi init
+                            $('#content').hide();
+                        },
+                        onImageUpload: function(files) {
+                            // Tắt upload ảnh qua Summernote để tránh conflict
+                        }
+                    }
+                });
+            } else {
+                console.error('Summernote not loaded');
+            }
+        }, 800); // Tăng thời gian đợi
     });
 </script>
 @endpush

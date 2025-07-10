@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Enums\PostStatus;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
@@ -10,7 +12,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Post extends Model implements HasMedia
 {
-    use InteractsWithMedia;
+    use HasFactory, InteractsWithMedia, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -72,7 +74,7 @@ class Post extends Model implements HasMedia
             return $Slug;
         }
 
-        // Nếu đã tồn tại thì thêm MD5 hash để đảm bảo độc nhất
+        // thêm MD5 hash 
         $uniqueHash = substr(md5($title . time() . uniqid()), 0, 8);
         return $Slug . '-' . $uniqueHash;
     }

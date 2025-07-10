@@ -19,7 +19,21 @@
     </style>
 </head>
 <body>
-    <p>Cảm ơn bạn đã đăng ký</p>
+    <h2>Chào mừng {{ $user->first_name }} {{ $user->last_name }}!</h2>
+    
+    <p>Cảm ơn bạn đã đăng ký tài khoản .</p>
+    
+    <p><strong>Thông tin tài khoản:</strong></p>
+    <ul>
+        <li>Họ tên: {{ $user->first_name }} {{ $user->last_name }}</li>
+        <li>Email: {{ $user->email }}</li>
+        <li>Trạng thái: Chờ phê duyệt</li>
+    </ul>
+    
+    <p>Tài khoản của bạn đang được xem xét và sẽ được kích hoạt sớm nhất có thể.</p>
+    
+    <p>Trân trọng,<br>
+ 
     <p class="timestamp">Thời gian gửi: {{ $timestamp }}</p>
 </body>
 </html>
