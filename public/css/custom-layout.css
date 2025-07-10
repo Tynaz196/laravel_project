@@ -1,5 +1,5 @@
 /* Layout styles */
-.sidebar {
+/* .sidebar {
     height: 100vh;
     position: fixed;
     top: 0;
@@ -12,12 +12,12 @@
 .main-content {
     margin-left: 250px;
     padding: 20px;
-}
+} */
 
 .navbar {
-    position: fixed;
+    /* position: fixed;
     width: calc(100% - 250px);
-    margin-left: 250px;
+    margin-left: 250px; */
     z-index: 1000;
 }
 

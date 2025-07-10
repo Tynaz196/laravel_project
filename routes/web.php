@@ -8,7 +8,14 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\PostController;
+use App\Http\Controllers\PublicPostController;
+
+// Post Controllers
+use App\Http\Controllers\Post\PostListController;
+use App\Http\Controllers\Post\PostCreateController;
+use App\Http\Controllers\Post\PostViewController;
+use App\Http\Controllers\Post\PostUpdateController;
+use App\Http\Controllers\Post\PostDeleteController;
 
 
 Route::middleware(['guest'])->group(function () {
@@ -25,19 +32,32 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
+// Public route - accessible to everyone
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/post/{slug}', [PublicPostController::class, 'show'])->name('public.post.show');
+
 Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-    Route::get('/', [HomeController::class, 'index'])->name('home');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-    Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
-    Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
-    Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
-    Route::delete('/posts/destroy-all', [PostController::class, 'destroyAll'])->name('posts.destroyAll');
-    Route::get('/posts/{post:slug}', [PostController::class, 'show'])->name('posts.show');
-    Route::get('/posts/{post:slug}/edit', [PostController::class, 'edit'])->name('posts.edit');
-    Route::patch('/posts/{post:slug}', [PostController::class, 'update'])->name('posts.update');
-    Route::delete('/posts/{post:slug}', [PostController::class, 'destroy'])->name('posts.destroy');
+    // Post List Routes
+    Route::get('/posts', [PostListController::class, 'index'])->name('posts.index');
+    Route::get('/posts/data', [PostListController::class, 'data'])->name('posts.data');
+
+    // Post Create Routes
+    Route::get('/posts/create', [PostCreateController::class, 'create'])->name('posts.create');
+    Route::post('/posts', [PostCreateController::class, 'store'])->name('posts.store');
+
+    // Post View Routes
+    Route::get('/posts/{post:slug}', [PostViewController::class, 'show'])->name('posts.show');
+
+    // Post Update Routes
+    Route::get('/posts/{post:slug}/edit', [PostUpdateController::class, 'edit'])->name('posts.edit');
+    Route::patch('/posts/{post:slug}', [PostUpdateController::class, 'update'])->name('posts.update');
+
+    // Post Delete Routes
+    Route::delete('/posts/{post:slug}', [PostDeleteController::class, 'destroy'])->name('posts.destroy');
+    Route::delete('/posts/destroy-all', [PostDeleteController::class, 'destroyAll'])->name('posts.destroyAll');
 });

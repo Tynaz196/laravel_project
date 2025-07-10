@@ -6,7 +6,9 @@
 
     <div class="card">
         @if ($post->thumbnail_url)
-            <img src="{{ $post->thumbnail_url }}" class="card-img-top" alt="Thumbnail">
+            <div class="text-center p-3">
+                <img src="{{ $post->thumbnail_url }}" class="img-fluid rounded thumbnail-show" alt="Thumbnail">
+            </div>
         @endif
 
         <div class="card-body">
@@ -27,3 +29,26 @@
     </div>
 </div>
 @endsection
+
+@push('styles')
+<style>
+    .thumbnail-show {
+        max-width: 400px;
+        max-height: 300px;
+        object-fit: cover;
+        border: 1px solid #dee2e6;
+    }
+    
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .card-body {
+        padding: 2rem;
+    }
+    
+    .border.rounded.p-3 {
+        line-height: 1.6;
+    }
+</style>
+@endpush

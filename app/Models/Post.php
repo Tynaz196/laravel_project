@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Enums\PostStatus;
-use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -48,35 +47,6 @@ class Post extends Model implements HasMedia
     public function scopeDennied($query)
     {
         return $query->where('status', PostStatus::DENNIED);
-    }
-
-    protected static function booted()
-    {
-        static::creating(function ($post) {
-            $post->slug = static::generateUniqueSlug($post->title);
-        });
-
-        static::updating(function ($post) {
-            if ($post->isDirty('title')) {
-                $post->slug = static::generateUniqueSlug($post->title, $post->id);
-            }
-        });
-    }
-
-    protected static function generateUniqueSlug(string $title, $ignoreId = null): string
-    {
-        $Slug = Str::slug($title);
-
-        if (!static::query()
-            ->where('slug', $Slug)
-            ->when($ignoreId, fn($query) => $query->where('id', '!=', $ignoreId))
-            ->exists()) {
-            return $Slug;
-        }
-
-        // thêm MD5 hash 
-        $uniqueHash = substr(md5($title . time() . uniqid()), 0, 8);
-        return $Slug . '-' . $uniqueHash;
     }
 
     public function getThumbnailUrlAttribute(): ?string
