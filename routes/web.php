@@ -18,6 +18,8 @@ use App\Http\Controllers\Post\PostUpdateController;
 use App\Http\Controllers\Post\PostDeleteController;
 
 
+Route::redirect('/', '/news');
+
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
@@ -33,8 +35,8 @@ Route::middleware(['guest'])->group(function () {
 });
 
 // Public route - accessible to everyone
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/post/{slug}', [PublicPostController::class, 'show'])->name('public.post.show');
+Route::get('/news', [HomeController::class, 'index'])->name('home');
+Route::get('/post/{post:slug}', [PublicPostController::class, 'show'])->name('public.post.show');
 
 Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -54,10 +56,10 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::get('/posts/{post:slug}', [PostViewController::class, 'show'])->name('posts.show');
 
     // Post Update Routes
-    Route::get('/posts/{post:slug}/edit', [PostUpdateController::class, 'edit'])->name('posts.edit');
-    Route::patch('/posts/{post:slug}', [PostUpdateController::class, 'update'])->name('posts.update');
+    Route::get('/posts/{post}/edit', [PostUpdateController::class, 'edit'])->name('posts.edit');
+    Route::patch('/posts/{post}', [PostUpdateController::class, 'update'])->name('posts.update');
 
     // Post Delete Routes
-    Route::delete('/posts/{post:slug}', [PostDeleteController::class, 'destroy'])->name('posts.destroy');
+    Route::delete('/posts/{post}', [PostDeleteController::class, 'destroy'])->name('posts.destroy');
     Route::delete('/posts/destroy-all', [PostDeleteController::class, 'destroyAll'])->name('posts.destroyAll');
 });

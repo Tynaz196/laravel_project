@@ -75,19 +75,20 @@
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row) {
-                            var showUrl = "/posts/" + data;
-                            var editUrl = "/posts/" + data + "/edit";
+                            // Tạo URL bằng cách thay thế placeholder
+                            var showUrl = "{{ route('posts.show', ':slug') }}".replace(':slug', row.slug);
+                            var editUrl = "{{ route('posts.edit', ':id') }}".replace(':id', row.id);
                             
                             return `
                                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                                    <a href="${showUrl}" class="btn btn-info btn-sm" title="Xem bài viết">
+                                    <a class="btn btn-info btn-sm" href="${showUrl}" title="Xem bài viết">
                                         <i class="fas fa-eye"></i> Xem
                                     </a>
-                                    <a href="${editUrl}" class="btn btn-warning btn-sm" title="Chỉnh sửa bài viết">
+                                    <a class="btn btn-warning btn-sm" href="${editUrl}" title="Chỉnh sửa bài viết">
                                         <i class="fas fa-edit"></i> Sửa
                                     </a>
                                     <button type="button" class="btn btn-danger btn-sm delete-post" 
-                                            data-slug="${data}" data-title="${row.title}" title="Xóa bài viết">
+                                        data-slug="${row.slug}"  data-id="${row.id}" data-title="${row.title}" title="Xóa bài viết">
                                         <i class="fas fa-trash"></i> Xóa
                                     </button>
                                 </div>
@@ -120,6 +121,16 @@
                         next: "Tiếp",
                         previous: "Trước"
                     }
+                },
+                // ẩn bài viết
+                drawCallback: function(settings) {
+                    var api = this.api();
+                    var count = api.data().count();
+                    if (count === 0) {
+                        $('#delete-all-btn').hide();
+                    } else {
+                        $('#delete-all-btn').show();
+                    }
                 }
             });
 
@@ -127,9 +138,10 @@
             $('#postsTable').on('click', '.delete-post', function(e) {
                 e.preventDefault();
                 
-                var slug = $(this).data('slug');
+                var postId = $(this).data('id');
                 var title = $(this).data('title');
-                var deleteUrl = "/posts/" + slug;
+                // Use dummy ID in route and replace it to avoid blade compile errors
+                var deleteUrl = "{{ route('posts.destroy', 0) }}".replace('0', postId);
                 
                 if (confirm('Bạn có chắc chắn muốn xóa bài viết "' + title + '"?')) {
                     $.ajax({
@@ -161,7 +173,7 @@
                 
                 if (confirm('Bạn có chắc chắn muốn xóa TẤT CẢ bài viết của mình? Hành động này không thể hoàn tác!')) {
                     $.ajax({
-                        url: '/posts/destroy-all',
+                        url: '{{ route('posts.destroyAll') }}',
                         type: 'DELETE',
                         data: {
                             _token: '{{ csrf_token() }}'

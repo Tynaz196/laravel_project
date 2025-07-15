@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Enums\PostStatus;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use App\Observers\PostObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
+#[ObservedBy(PostObserver::class)]
 class Post extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, SoftDeletes;
@@ -51,6 +54,9 @@ class Post extends Model implements HasMedia
 
     public function getThumbnailUrlAttribute(): ?string
     {
-        return $this->getFirstMediaUrl('thumbnails');
+        // Return uploaded thumbnail or default from storage/public
+        // Returns the thumbnail URL or default image in storage/app/public
+        return $this->getFirstMediaUrl('thumbnails')
+            ?: asset('storage/default-thumbnail.jpg');
     }
 }

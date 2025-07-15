@@ -10,12 +10,17 @@ class PublicPostController extends Controller
     /**
      * Hiển thị chi tiết bài viết công khai (đã được duyệt)
      */
-    public function show($slug)
+    public function show(Post $post)
     {
-        $post = Post::where('slug', $slug)
-            ->where('status', PostStatus::APPROVED)
-            ->with(['user:id,first_name,last_name']) // Sử dụng các cột thực tế
-            ->firstOrFail();
+        // Kiểm tra bài viết đã được duyệt chưa
+        if ($post->status !== PostStatus::APPROVED) {
+            abort(404, 'Bài viết không tồn tại hoặc chưa được duyệt');
+        }
+
+        // Eager load user information nếu chưa có
+        if (!$post->relationLoaded('user')) {
+            $post->load(['user:id,first_name,last_name']);
+        }
 
         return view('public.post-detail', compact('post'));
     }

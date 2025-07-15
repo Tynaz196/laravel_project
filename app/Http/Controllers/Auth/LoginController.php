@@ -33,7 +33,10 @@ class LoginController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $credentials = $request->only('email', 'password') + ['status' => UserStatus::APPROVED];
+        $credentials = array_merge(
+            $request->only('email', 'password'),
+            ['status' => UserStatus::APPROVED]
+        );
 
         if (Auth::attempt($credentials)) {
             return redirect()->intended($this->redirectTo);

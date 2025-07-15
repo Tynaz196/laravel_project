@@ -15,39 +15,28 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
     
-    <!-- Summernote CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs5.min.css" rel="stylesheet">
+    <!-- Quill CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     
     <!-- Custom CSS -->
     <!-- <link rel="stylesheet" href="{{ asset('css/custom-layout.css') }}"> -->
     
-    <!-- Fix Summernote double textarea -->
-    <style>
-        /* Ẩn textarea gốc khi Summernote active */
-        .note-editor + textarea,
-        .note-editor ~ textarea {
-            display: none !important;
-        }
-        
-        /* Ngăn chặn duplicate editor */
-        .note-editing-area {
-            position: relative;
-        }
-        
-        /* Fix layout */
-        .note-editor {
-            margin-bottom: 0;
-        }
-        
-        /* Prevent multiple instances */
-        textarea#content.note-editable {
-            display: none !important;
-        }
-    </style>
+
     
     @stack('styles')
+    
+    <!-- Prevent FOUC -->
+    <style>
+        body { visibility: hidden; }
+    </style>
 </head>
 <body>
+    <script>
+        // Show body after page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.style.visibility = 'visible';
+        });
+    </script>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
@@ -115,17 +104,20 @@
     <!-- jQuery CDN first -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     
-    <!-- Then Vite assets -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <!-- Bootstrap Bundle JS (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
+    <!-- Then Vite assets (app.js as module) -->
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
     
-    <!-- Summernote JS -->
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs5.min.js"></script>
+   <!-- Quill JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     
     @stack('scripts')
 </body>

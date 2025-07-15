@@ -8,7 +8,7 @@
             <a href="{{ route('posts.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Tạo bài viết
             </a>
-            <form action="{{ route('posts.destroyAll') }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa TẤT CẢ bài viết của mình? Hành động này không thể hoàn tác!')">
+            <form id="delete-all-btn" action="{{ route('posts.destroyAll') }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa TẤT CẢ bài viết của mình? Hành động này không thể hoàn tác!')">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn btn-danger">
@@ -45,7 +45,7 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- DataTable sẽ render dữ liệu bằng AJAX -->
+              
             </tbody>
         </table>
     </div>
