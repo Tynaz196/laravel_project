@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 
-@section('title', 'Quản lý bài viết')
-@section('page-title', 'Danh sách bài viết')
+@section('title', 'Quản lý tài khoản')
+@section('page-title', 'Quản lý tài khoản')
 
 @section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{ url('/') }}">Trang chủ</a></li>
-    <li class="breadcrumb-item active">Quản lý bài viết</li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.posts.index') }}">Admin</a></li>
+    <li class="breadcrumb-item active">Quản lý tài khoản</li>
 @endsection
 
 @section('content')
@@ -15,25 +15,19 @@
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h3 class="card-title">Danh sách bài viết</h3>
-                        <div>
-                            <a href="{{ route('posts.create') }}" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Tạo bài viết
-                            </a>
-                            <form id="delete-all-btn" action="{{ route('posts.destroyAll') }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa TẤT CẢ bài viết của mình? Hành động này không thể hoàn tác!')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">
-                                    <i class="fas fa-trash-alt"></i> Xóa tất cả
-                                </button>
-                            </form>
+                        <h3 class="card-title">
+                            <i class="fas fa-users mr-2"></i>
+                            Danh sách tài khoản
+                        </h3>
+                        <div class="card-tools">
+                            <span class="badge badge-info">Tổng cộng: <span id="total-users">0</span></span>
                         </div>
                     </div>
                 </div>
 
                 <div class="card-body">
                     @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <div class="alert alert-success alert-dismissible" role="alert">
                             {{ session('success') }}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -42,7 +36,7 @@
                     @endif
 
                     @if(session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div class="alert alert-danger alert-dismissible" role="alert">
                             {{ session('error') }}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -51,15 +45,15 @@
                     @endif
 
                     <div class="table-responsive">
-                        <table id="postsTable" class="table table-bordered table-striped">
+                        <table id="adminUsersTable" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th width="60">STT</th>
-                                    <th width="80">Ảnh bìa</th>
-                                    <th>Tiêu đề</th>
-                                    <th width="150">Ngày đăng</th>
-                                    <th>Mô tả</th>
+                                    <th>Tên</th>
+                                    <th>Email</th>
+                                    <th width="100">Vai trò</th>
                                     <th width="120">Trạng thái</th>
+                                    <th width="150">Ngày tham gia</th>
                                     <th width="200">Hành động</th>
                                 </tr>
                             </thead>
@@ -75,4 +69,4 @@
 </div>
 @endsection
 
-@include('partials.posts-datatable-script')
+@include('partials.admin-users-datatable-script')

@@ -16,10 +16,11 @@ class HomeController extends Controller
     public function index()
     {
         // Lấy các bài viết đã được duyệt, sắp xếp theo ngày tạo mới nhất
-        $posts = Post::where('status', PostStatus::APPROVED)
-            ->with(['user:id,first_name,last_name']) // Eager load user info với các cột thực tế
+        $posts = Post::approved()
+            ->where('publish_date', '<=', now())
+            ->with(['user:id,first_name,last_name']) // Eager load user info with specific columns
             ->latest('publish_date')
-            ->paginate(6); // Hiển thị 6 bài viết mỗi trang
+            ->paginate(6); // Display 6 posts per page
 
         return view('home', compact('posts'));
     }

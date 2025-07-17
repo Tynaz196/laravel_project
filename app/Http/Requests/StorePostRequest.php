@@ -30,8 +30,10 @@ class StorePostRequest extends FormRequest
         // Thumbnail chỉ bắt buộc khi tạo mới (POST)
         if ($this->isMethod('POST')) {
             $rules['thumbnail'] = ['required', 'image', 'max:2048'];
+            $rules['publish_date'] = ['required', 'date', 'after:now'];
         } else {
             $rules['thumbnail'] = ['nullable', 'image', 'max:2048'];
+            $rules['publish_date'] = ['nullable', 'date', 'after:now'];
         }
 
         return $rules;
@@ -55,6 +57,9 @@ class StorePostRequest extends FormRequest
             'thumbnail.required' => 'Bạn chưa chọn ảnh thumbnail.',
             'thumbnail.image' => 'File phải là hình ảnh.',
             'thumbnail.max' => 'Kích thước ảnh không được vượt quá :max KB.',
+            'publish_date.required' => 'Bạn chưa chọn ngày đăng.',
+            'publish_date.date'     => 'Ngày đăng không hợp lệ.',
+            'publish_date.after'    => 'Ngày đăng phải lớn hơn thời điểm hiện tại.',
         ];
     }
 }

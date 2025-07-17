@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\JobController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -9,13 +8,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicPostController;
-
-// Post Controllers
-use App\Http\Controllers\Post\PostListController;
-use App\Http\Controllers\Post\PostCreateController;
-use App\Http\Controllers\Post\PostViewController;
-use App\Http\Controllers\Post\PostUpdateController;
-use App\Http\Controllers\Post\PostDeleteController;
+use App\Http\Controllers\PostController;
 
 
 Route::redirect('/', '/news');
@@ -44,22 +37,31 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-    // Post List Routes
-    Route::get('/posts', [PostListController::class, 'index'])->name('posts.index');
-    Route::get('/posts/data', [PostListController::class, 'data'])->name('posts.data');
+    Route::get('posts', [PostController::class, 'index'])->name('posts.index');
+    Route::get('posts/create', [PostController::class, 'create'])->name('posts.create');
+    Route::post('posts', [PostController::class, 'store'])->name('posts.store');
+    Route::get('posts/data', [PostController::class, 'data'])->name('posts.data');
+    Route::delete('posts/destroy-all', [PostController::class, 'destroyAll'])->name('posts.destroyAll');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+    Route::get('/posts/{post:slug}', [PostController::class, 'show'])->name('posts.show');
+    Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+    Route::patch('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+});
 
-    // Post Create Routes
-    Route::get('/posts/create', [PostCreateController::class, 'create'])->name('posts.create');
-    Route::post('/posts', [PostCreateController::class, 'store'])->name('posts.store');
+// Admin routes - protected by admin middleware
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    // Admin Posts Management
+    Route::get('posts/data', [App\Http\Controllers\Admin\AdminPostController::class, 'data'])->name('posts.data');
+    Route::get('posts', [App\Http\Controllers\Admin\AdminPostController::class, 'index'])->name('posts.index');
+    Route::delete('posts/destroy-all', [App\Http\Controllers\Admin\AdminPostController::class, 'destroyAll'])->name('posts.destroyAll');
+    Route::delete('/posts/{post}', [App\Http\Controllers\Admin\AdminPostController::class, 'destroy'])->name('posts.destroy');
+    Route::get('/posts/{post:slug}', [App\Http\Controllers\Admin\AdminPostController::class, 'show'])->name('posts.show');
+    Route::get('/posts/{post}/edit', [App\Http\Controllers\Admin\AdminPostController::class, 'edit'])->name('posts.edit');
+    Route::patch('/posts/{post}', [App\Http\Controllers\Admin\AdminPostController::class, 'update'])->name('posts.update');
 
-    // Post View Routes
-    Route::get('/posts/{post:slug}', [PostViewController::class, 'show'])->name('posts.show');
-
-    // Post Update Routes
-    Route::get('/posts/{post}/edit', [PostUpdateController::class, 'edit'])->name('posts.edit');
-    Route::patch('/posts/{post}', [PostUpdateController::class, 'update'])->name('posts.update');
-
-    // Post Delete Routes
-    Route::delete('/posts/{post}', [PostDeleteController::class, 'destroy'])->name('posts.destroy');
-    Route::delete('/posts/destroy-all', [PostDeleteController::class, 'destroyAll'])->name('posts.destroyAll');
+    // Admin dashboard redirect
+    Route::get('/', function () {
+        return to_route('admin.posts.index');
+    });
 });

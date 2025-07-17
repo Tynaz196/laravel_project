@@ -31,10 +31,6 @@
                                                 </div>
                                             @endif
                                             
-                                            <!-- Status badge -->
-                                            <span class="position-absolute top-0 end-0 m-2 badge {{ $post->status->badgeClass() }}">
-                                                {{ $post->status->label() }}
-                                            </span>
                                         </div>
                                     </div>
                                     
@@ -70,6 +66,10 @@
                             </div>
                         </div>
                     @endforeach
+                </div>
+                
+                <div class="d-flex justify-content-center my-4">
+                    {{ $posts->links('pagination::bootstrap-4') }}
                 </div>
                 
             @else

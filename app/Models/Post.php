@@ -55,7 +55,6 @@ class Post extends Model implements HasMedia
     public function getThumbnailUrlAttribute(): ?string
     {
         // Return uploaded thumbnail or default from storage/public
-        // Returns the thumbnail URL or default image in storage/app/public
         return $this->getFirstMediaUrl('thumbnails')
             ?: asset('storage/default-thumbnail.jpg');
     }

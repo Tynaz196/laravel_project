@@ -1,13 +1,13 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        console.log('Initializing DataTable with AJAX...');
+        console.log('Initializing Admin Posts DataTable with AJAX...');
         
         if (typeof $.fn.DataTable !== 'undefined') {
-            var table = $('#postsTable').DataTable({
+            var table = $('#adminPostsTable').DataTable({
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('posts.data') }}",
+                    url: "{{ route('admin.posts.data') }}",
                     type: 'GET'
                 },
                 columns: [
@@ -38,6 +38,18 @@
                         name: 'title'
                     },
                     {
+                        data: 'author',
+                        name: 'user_id',
+                        render: function(data, type, row) {
+                            return `
+                                <div>
+                                    <strong>${data}</strong><br>
+                                    <small class="text-muted">${row.author_email}</small>
+                                </div>
+                            `;
+                        }
+                    },
+                    {
                         data: 'publish_date',
                         name: 'publish_date'
                     },
@@ -57,21 +69,21 @@
                             switch(data) {
                                 case 0:
                                 case '0':
-                                    badgeClass = 'bg-warning text-dark';
+                                    badgeClass = 'badge-warning';
                                     label = 'Chờ phê duyệt';
                                     break;
                                 case 1:
                                 case '1':
-                                    badgeClass = 'bg-success';
+                                    badgeClass = 'badge-success';
                                     label = 'Đã phê duyệt';
                                     break;
                                 case 2:
                                 case '2':
-                                    badgeClass = 'bg-danger';
+                                    badgeClass = 'badge-danger';
                                     label = 'Từ chối';
                                     break;
                                 default:
-                                    badgeClass = 'bg-secondary';
+                                    badgeClass = 'badge-secondary';
                                     label = 'Không xác định';
                             }
                             
@@ -85,45 +97,45 @@
                         searchable: false,
                         render: function(data, type, row) {
                             // Tạo URL bằng cách thay thế placeholder
-                            var showUrl = "{{ route('posts.show', ':slug') }}".replace(':slug', row.slug);
-                            var editUrl = "{{ route('posts.edit', ':id') }}".replace(':id', row.id);
+                          var showUrl = "{{ route('admin.posts.show', ':slug') }}".replace(':slug', row.slug);
+                          var editUrl = "{{ route('admin.posts.edit', ':id') }}".replace(':id', row.id);
                             
                             return `
-                                <div class="d-flex flex-wrap gap-2 align-items-center">
+                                <div class="btn-group">
                                     <a class="btn btn-info btn-sm" href="${showUrl}" title="Xem bài viết">
-                                        <i class="fas fa-eye"></i> Xem
+                                        <i class="fas fa-eye"></i>
                                     </a>
                                     <a class="btn btn-warning btn-sm" href="${editUrl}" title="Chỉnh sửa bài viết">
-                                        <i class="fas fa-edit"></i> Sửa
+                                        <i class="fas fa-edit"></i>
                                     </a>
                                     <button type="button" class="btn btn-danger btn-sm delete-post" 
-                                        data-slug="${row.slug}"  data-id="${row.id}" data-title="${row.title}" title="Xóa bài viết">
-                                        <i class="fas fa-trash"></i> Xóa
+                                        data-id="${row.id}" data-title="${row.title}" title="Xóa bài viết">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
                             `;
                         }
                     }
                 ],
-                order: [[3, 'desc']], // Sắp xếp theo ngày tạo mới nhất
+                order: [[4, 'desc']], // Sắp xếp theo ngày đăng mới nhất
                 paging: true,
                 searching: true,
                 ordering: true,
                 info: true,
                 autoWidth: false,
                 responsive: true,
-                pageLength: 5,
-                lengthChange: false,
+                pageLength: 10,
+                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
                 language: {
                     processing: "Đang xử lý...",
                     loadingRecords: "Đang tải...",
                     zeroRecords: "Không có dữ liệu",
-                    emptyTable: "Bạn chưa có bài viết nào",
-                    info: "Hiển thị trang _PAGE_ của _PAGES_",
+                    emptyTable: "Không có bài viết nào",
+                    info: "Hiển thị _START_ đến _END_ của _TOTAL_ bài viết",
                     infoEmpty: "Không có bản ghi",
                     infoFiltered: "(lọc từ _MAX_ bản ghi)",
                     lengthMenu: "Hiển thị _MENU_ bản ghi",
-                    search: "Tìm kiếm:",
+                    search: "Tìm kiếm (theo tiêu đề, email tác giả):",
                     paginate: {
                         first: "Đầu",
                         last: "Cuối",
@@ -131,27 +143,22 @@
                         previous: "Trước"
                     }
                 },
-                // ẩn bài viết
                 drawCallback: function(settings) {
                     var api = this.api();
-                    var count = api.data().count();
-                    if (count === 0) {
-                        $('#delete-all-btn').hide();
-                    } else {
-                        $('#delete-all-btn').show();
-                    }
+                    var recordsTotal = api.page.info().recordsTotal;
+                    $('#total-posts').text(recordsTotal);
                 }
             });
 
             // Xử lý sự kiện xóa bài viết với AJAX
-            $('#postsTable').on('click', '.delete-post', function(e) {
+            $('#adminPostsTable').on('click', '.delete-post', function(e) {
                 e.preventDefault();
                 
                 var postId = $(this).data('id');
                 var title = $(this).data('title');
-                var deleteUrl = "{{ route('posts.destroy', ':id') }}".replace(':id', postId);
+                var deleteUrl = "{{ route('admin.posts.destroy', ':id') }}".replace(':id', postId);
                 
-                if (confirm('Bạn có chắc chắn muốn xóa bài viết "' + title + '"?')) {
+                if (confirm('Bạn có chắc chắn muốn xóa bài viết "' + title + '"? Hành động này không thể hoàn tác!')) {
                     $.ajax({
                         url: deleteUrl,
                         type: 'DELETE',
@@ -175,35 +182,7 @@
                 }
             });
 
-            // Xử lý sự kiện xóa tất cả bài viết với AJAX
-            $('form[action="{{ route('posts.destroyAll') }}"]').on('submit', function(e) {
-                e.preventDefault();
-                
-                if (confirm('Bạn có chắc chắn muốn xóa TẤT CẢ bài viết của mình? Hành động này không thể hoàn tác!')) {
-                    $.ajax({
-                        url: '{{ route('posts.destroyAll') }}',
-                        type: 'DELETE',
-                        data: {
-                            _token: @json(csrf_token())
-                        },
-                        success: function(response) {
-                            // Hiển thị thông báo thành công
-                            showAlert('success', response.success);
-                            // Reload table
-                            table.ajax.reload();
-                        },
-                        error: function(xhr) {
-                            var errorMessage = 'Đã xảy ra lỗi khi xóa tất cả bài viết.';
-                            if (xhr.responseJSON && xhr.responseJSON.error) {
-                                errorMessage = xhr.responseJSON.error;
-                            }
-                            showAlert('error', errorMessage);
-                        }
-                    });
-                }
-            });
-
-            console.log('DataTable with AJAX initialized successfully');
+            console.log('Admin Posts DataTable initialized successfully');
         } else {
             console.error('DataTable not available');
         }
@@ -234,19 +213,18 @@
 
 <style>
 /* Tối ưu responsive cho action buttons */
-.action-buttons {
-    min-width: 200px;
+.btn-group {
+    min-width: 100px;
 }
 
 @media (max-width: 768px) {
-    .action-buttons .d-flex {
+    .btn-group {
         flex-direction: column;
-        gap: 0.5rem !important;
     }
     
-    .action-buttons .btn {
+    .btn-group .btn {
         width: 100%;
-        justify-content: center;
+        margin-bottom: 2px;
     }
 }
 
@@ -271,19 +249,6 @@
 .table-responsive {
     border-radius: 0.375rem;
     overflow: hidden;
-}
-
-/* AdminLTE Post Show Styles */
-.thumbnail-show {
-    max-width: 400px;
-    max-height: 300px;
-    object-fit: cover;
-    border: 1px solid #dee2e6;
-}
-
-/* Card content spacing */
-.content .card .card-body {
-    padding: 1.25rem;
 }
 
 /* Badge styles for AdminLTE */

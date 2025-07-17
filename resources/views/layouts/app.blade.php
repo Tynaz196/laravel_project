@@ -10,6 +10,9 @@
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
@@ -38,6 +41,7 @@
         });
     </script>
     <div id="app">
+        <!-- Navbar -->
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
@@ -76,6 +80,12 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    @if(Auth::user()->role === \App\Enums\UserRole::ADMIN)
+                                        <a class="dropdown-item" href="{{ url('/admin') }}">
+                                            <i class="fas fa-user-shield me-2"></i> Admin Panel
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                    @endif
                                     <a class="dropdown-item" href="{{ route('profile.edit') }}">
                                         Hồ sơ
                                     </a>
