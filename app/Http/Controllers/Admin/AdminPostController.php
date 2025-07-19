@@ -8,7 +8,9 @@ use App\Models\User;
 use App\Enums\PostStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\StorePostRequest;
+use App\Jobs\SendPostApprovedEmail;
 
 class AdminPostController extends Controller
 {
@@ -31,7 +33,16 @@ class AdminPostController extends Controller
     public function data(Request $request)
     {
         $posts = Post::with(['user', 'media'])
-            ->select(['id', 'title', 'description', 'status', 'publish_date', 'slug', 'user_id', 'created_at']);
+            ->select([
+                'id',
+                'title',
+                'description',
+                'status',
+                'publish_date',
+                'slug',
+                'user_id',
+                'created_at'
+            ]);
 
         // Server-side search
         if ($request->has('search') && !empty($request->search['value'])) {
@@ -52,7 +63,16 @@ class AdminPostController extends Controller
             $orderDirection = $request->order[0]['dir'];
 
             // Map column index to database column
-            $columns = ['', '', 'title', 'user_id', 'publish_date', 'description', 'status', ''];
+            $columns = [
+                '',
+                '',
+                'title',
+                'user_id',
+                'publish_date',
+                'description',
+                'status',
+                ''
+            ];
 
             if (isset($columns[$orderColumnIndex]) && !empty($columns[$orderColumnIndex])) {
                 if ($columns[$orderColumnIndex] == 'user_id') {
@@ -82,7 +102,9 @@ class AdminPostController extends Controller
                 'title' => $post->title,
                 'author' => $post->user->name ?? 'Unknown',
                 'author_email' => $post->user->email ?? 'Unknown',
-                'publish_date' => $post->publish_date ? $post->publish_date->format('d/m/Y H:i') : 'Chưa đặt',
+                'publish_date' => $post->publish_date
+                    ? $post->publish_date->format('d/m/Y H:i')
+                    : 'Chưa đặt',
                 'description' => $post->description,
                 'status' => $post->status->value,
                 'status_badge' => $post->status->value,
@@ -110,23 +132,20 @@ class AdminPostController extends Controller
     /**
      * Update the specified post in storage
      */
-    public function update(Request $request, Post $post)
+    public function update(StorePostRequest $request, Post $post)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:500',
-            'content' => 'required|string',
-            'status' => 'required|in:0,1,2',
-            'publish_date' => 'nullable|date|after:now',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
-
+        $data = $request->validated();
+        
+        // Lưu trạng thái cũ để so sánh
+        $oldStatus = $post->status;
+        $newStatus = PostStatus::from($data['status']);
+        
         $post->update([
-            'title' => $request->title,
-            'description' => $request->description,
-            'content' => $request->content,
-            'status' => PostStatus::from($request->status),
-            'publish_date' => $request->publish_date
+            'title'       => $data['title'],
+            'content'     => $data['content'],
+            'description' => $data['description'] ?? null,
+            'status'      => $newStatus,
+            'publish_date' => $data['publish_date'],
         ]);
 
         // Handle thumbnail upload
@@ -141,8 +160,25 @@ class AdminPostController extends Controller
                 ->toMediaCollection('thumbnails');
         }
 
+        // Gửi email thông báo nếu bài viết được duyệt (từ pending hoặc rejected thành approved)
+        if ($oldStatus !== PostStatus::APPROVED && $newStatus === PostStatus::APPROVED) {
+            try {
+                // Dispatch job để gửi email qua queue
+                SendPostApprovedEmail::dispatch($post);
+                
+                Log::info('Post approval email job dispatched', [
+                    'post_id' => $post->id,
+                    'user_email' => $post->user->email
+                ]);
+            } catch (\Exception $e) {
+                // Log lỗi nhưng không làm fail toàn bộ request
+                Log::error('Failed to dispatch post approval email job: ' . $e->getMessage());
+            }
+        }
+
         return redirect()->route('admin.posts.index')
-            ->with('success', 'Bài viết đã được cập nhật thành công!');
+            ->with('success', 'Bài viết đã được cập nhật thành công!' . 
+                ($oldStatus !== PostStatus::APPROVED && $newStatus === PostStatus::APPROVED ? ' Email thông báo đã được gửi cho tác giả.' : ''));
     }
 
     /**

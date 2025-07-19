@@ -25,7 +25,7 @@
                         
                         <div class="form-group">
                             <label for="title">Tiêu đề <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title', $post->title) }}" required>
+                            <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title', $post->title) }}" >
                             @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
@@ -53,6 +53,13 @@
                             <input type="file" class="form-control @error('thumbnail') is-invalid @enderror" id="thumbnail" name="thumbnail" accept="image/*">
                             <small class="form-text text-muted">Chọn ảnh mới để thay thế ảnh hiện tại (tùy chọn)</small>
                             @error('thumbnail')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="publish_date">Ngày đăng </label>
+                            <input type="datetime-local" class="form-control @error('publish_date') is-invalid @enderror" id="publish_date" name="publish_date" value="{{ old('publish_date', $post->publish_date ? $post->publish_date->format('Y-m-d\TH:i') : '') }}" >
+                            <small class="form-text text-muted">Chọn thời điểm muốn đăng bài viết</small>
+                            @error('publish_date')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
                         <div class="card-footer">

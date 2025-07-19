@@ -42,7 +42,6 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::post('posts', [PostController::class, 'store'])->name('posts.store');
     Route::get('posts/data', [PostController::class, 'data'])->name('posts.data');
     Route::delete('posts/destroy-all', [PostController::class, 'destroyAll'])->name('posts.destroyAll');
-    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
     Route::get('/posts/{post:slug}', [PostController::class, 'show'])->name('posts.show');
     Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
     Route::patch('/posts/{post}', [PostController::class, 'update'])->name('posts.update');

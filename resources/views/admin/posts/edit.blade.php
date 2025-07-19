@@ -34,7 +34,7 @@
                             <div class="col-md-8">
                                 <div class="form-group">
                                     <label for="title">Tiêu đề <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title', $post->title) }}" required>
+                                    <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title', $post->title) }}">
                                     @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
 
@@ -47,7 +47,7 @@
                                 <div class="form-group">
                                     <label for="editor">Nội dung <span class="text-danger">*</span></label>
                                     <div id="editor" style="height: 300px;">{!! old('content', $post->content) !!}</div>
-                                    <input type="hidden" name="content" id="content">
+                                    <input type="hidden" name="content" id="content" value="{{ old('content', $post->content) }}">
                                     @error('content')<div class="text-danger mt-1">{{ $message }}</div>@enderror
                                 </div>
                             </div>
@@ -55,7 +55,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="status">Trạng thái bài viết <span class="text-danger">*</span></label>
-                                    <select class="form-control @error('status') is-invalid @enderror" id="status" name="status" required>
+                                    <select class="form-control @error('status') is-invalid @enderror" id="status" name="status">
                                         <option value="0" {{ old('status', $post->status->value) == 0 ? 'selected' : '' }}>
                                             <i class="fas fa-clock"></i> Chờ phê duyệt
                                         </option>
@@ -105,9 +105,6 @@
                             <a href="{{ route('admin.posts.index') }}" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left"></i> Quay lại
                             </a>
-                            <a href="{{ route('admin.posts.show', $post->id) }}" class="btn btn-info">
-                                <i class="fas fa-eye"></i> Xem chi tiết
-                            </a>
                         </div>
                     </form>
                 </div>
@@ -120,27 +117,51 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize Quill
-        var quill = new Quill('#editor', {
-            theme: 'snow',
-            placeholder: 'Nhập nội dung bài viết...',
-            modules: { 
-                toolbar: [
-                    ['bold','italic','underline', 'strike'],
-                    ['blockquote', 'code-block'],
-                    [{ 'header': 1 }, { 'header': 2 }],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    ['link','image'],
-                    ['clean']
-                ] 
-            }
-        });
+        // Initialize Quill with defensive check
+        if (typeof Quill !== 'undefined') {
+            var quill = new Quill('#editor', {
+                theme: 'snow',
+                placeholder: 'Nhập nội dung bài viết...',
+                modules: { toolbar: [['bold','italic','underline'], ['link','image']] }
+            });
+            
+            // On form submit, transfer content to hidden input
+            var form = document.getElementById('admin-post-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    
         
-        // On form submit, transfer content to hidden input
-        var form = document.getElementById('admin-post-form');
-        form.addEventListener('submit', function() {
-            document.getElementById('content').value = quill.root.innerHTML;
-        });
+                    var content = quill.root.innerHTML;
+                    document.getElementById('content').value = content;
+
+                    // Remove any existing error message
+                    var existingError = document.querySelector('#content-error');
+                    if (existingError) {
+                        existingError.remove();
+                    }
+                    
+                    // Check if Quill has actual text content
+                    var textContent = quill.getText().trim();
+                    if (textContent.length === 0 || content.trim() === '<p><br></p>' || content.trim() === '') {
+                        e.preventDefault();
+                        
+                        // Create and display error message
+                        var errorDiv = document.createElement('div');
+                        errorDiv.id = 'content-error';
+                        errorDiv.className = 'text-danger mt-1';
+                        errorDiv.textContent = 'Bạn chưa nhập nội dung bài viết.';
+                        
+                        // Insert error message after the editor
+                        var editorContainer = document.getElementById('editor');
+                        editorContainer.parentNode.insertBefore(errorDiv, editorContainer.nextSibling);
+                        
+                        return false;
+                    }
+                });
+            }
+        } else {
+            console.error('Quill is not loaded');
+        }
     });
 </script>
 @endpush

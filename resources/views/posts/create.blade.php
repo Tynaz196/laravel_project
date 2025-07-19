@@ -50,7 +50,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="publish_date">Ngày đăng<span class="text-danger">*</span></label>
+                            <label for="publish_date">Ngày đăng</label>
                             <input type="datetime-local" name="publish_date" value="{{ old('publish_date') }}" class="form-control @error('publish_date') is-invalid @enderror">
                             @error('publish_date')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
