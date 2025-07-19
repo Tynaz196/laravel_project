@@ -8,6 +8,8 @@ use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use App\Http\Requests\AdminUserRequest;
 
 class AdminUserController extends Controller
 {
@@ -29,61 +31,71 @@ class AdminUserController extends Controller
      */
     public function data(Request $request)
     {
-        $users = User::select(['id', 'name', 'email', 'role', 'status', 'created_at']);
+        try {
+            $users = User::select(['id', 'first_name', 'last_name', 'email', 'address', 'status', 'role', 'created_at']);
 
-        // Server-side search
-        if ($request->has('search') && !empty($request->search['value'])) {
-            $searchValue = $request->search['value'];
-            $users->where(function ($query) use ($searchValue) {
-                $query->where('name', 'like', "%{$searchValue}%")
-                    ->orWhere('email', 'like', "%{$searchValue}%");
-            });
-        }
-
-        // Server-side ordering
-        if ($request->has('order')) {
-            $orderColumnIndex = $request->order[0]['column'];
-            $orderDirection = $request->order[0]['dir'];
-
-            // Map column index to database column
-            $columns = ['', 'name', 'email', 'role', 'status', 'created_at', ''];
-
-            if (isset($columns[$orderColumnIndex]) && !empty($columns[$orderColumnIndex])) {
-                $users->orderBy($columns[$orderColumnIndex], $orderDirection);
+            // Server-side search
+            if ($request->has('search') && !empty($request->search['value'])) {
+                $searchValue = $request->search['value'];
+                $users->where(function ($query) use ($searchValue) {
+                    $query->where('first_name', 'like', "%{$searchValue}%")
+                        ->orWhere('last_name', 'like', "%{$searchValue}%")
+                        ->orWhere('email', 'like', "%{$searchValue}%")
+                        ->orWhereRaw("CONCAT(last_name, ' ', first_name) LIKE ?", ["%{$searchValue}%"]);
+                });
             }
-        } else {
-            $users->orderBy('created_at', 'desc');
+
+            // Server-side ordering
+            if ($request->has('order')) {
+                $orderColumnIndex = $request->order[0]['column'];
+                $orderDirection = $request->order[0]['dir'];
+
+                // Map column index to database column
+                $columns = ['', 'last_name', 'email', 'address', 'status', ''];
+
+                if (isset($columns[$orderColumnIndex]) && !empty($columns[$orderColumnIndex])) {
+                    $users->orderBy($columns[$orderColumnIndex], $orderDirection);
+                }
+            } else {
+                $users->orderBy('created_at', 'desc');
+            }
+
+            // Get total count before pagination
+            $totalRecords = User::count();
+            $filteredRecords = (clone $users)->count();
+
+            // Server-side pagination
+            $start = $request->start ?? 0;
+            $length = $request->length ?? 10;
+            $users = $users->skip($start)->take($length)->get();
+
+            $data = $users->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name, // Sử dụng accessor để get full name
+                    'email' => $user->email,
+                    'address' => $user->address ?? 'Chưa cập nhật',
+                    'status' => $user->status->value,
+                    'status_label' => $user->status->label(),
+                    'status_badge_class' => $user->status->badgeClass(),
+                    'role' => $user->role->value,
+                    'is_admin' => $user->role === UserRole::ADMIN,
+                    'actions' => ''
+                ];
+            });
+
+            return response()->json([
+                'draw' => intval($request->draw),
+                'recordsTotal' => $totalRecords,
+                'recordsFiltered' => $filteredRecords,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            Log::error('AdminUserController data method error: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'An error occurred while fetching data: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Get total count before pagination
-        $totalRecords = User::count();
-        $filteredRecords = $users->count();
-
-        // Server-side pagination
-        $start = $request->start ?? 0;
-        $length = $request->length ?? 10;
-        $users = $users->skip($start)->take($length)->get();
-
-        $data = $users->map(function ($user) {
-            return [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role->value,
-                'role_label' => $user->role->value == 1 ? 'Admin' : 'User',
-                'status' => $user->status->value,
-                'status_label' => $user->status->value == 1 ? 'Hoạt động' : 'Không hoạt động',
-                'created_at' => $user->created_at->format('d/m/Y H:i'),
-                'actions' => ''
-            ];
-        });
-
-        return response()->json([
-            'draw' => intval($request->draw),
-            'recordsTotal' => $totalRecords,
-            'recordsFiltered' => $filteredRecords,
-            'data' => $data
-        ]);
     }
 
     /**
@@ -91,30 +103,35 @@ class AdminUserController extends Controller
      */
     public function edit(User $user)
     {
+        // Ngăn chặn chỉnh sửa tài khoản admin
+        if ($user->role === UserRole::ADMIN) {
+            return to_route('admin.users.index')
+                ->with('error', 'Không thể chỉnh sửa tài khoản Admin!');
+        }
+
         return view('admin.users.edit', compact('user'));
     }
 
     /**
      * Update the specified user in storage
      */
-    public function update(Request $request, User $user)
+    public function update(AdminUserRequest $request, User $user)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'role' => 'required|in:0,1',
-            'status' => 'required|in:0,1'
-        ]);
+        // Ngăn chặn cập nhật tài khoản admin
+        if ($user->role === UserRole::ADMIN) {
+            return to_route('admin.users.index')
+                ->with('error', 'Không thể cập nhật tài khoản Admin!');
+        }
 
         $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => UserRole::from($request->role),
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'address' => $request->address,
             'status' => UserStatus::from($request->status)
         ]);
 
-        return redirect()->route('admin.users.index')
-            ->with('success', 'Tài khoản đã được cập nhật thành công!');
+        return to_route('admin.users.index')
+            ->with('success', 'Thông tin tài khoản đã được cập nhật thành công!');
     }
 
     /**

@@ -135,11 +135,11 @@ class AdminPostController extends Controller
     public function update(StorePostRequest $request, Post $post)
     {
         $data = $request->validated();
-        
+
         // Lưu trạng thái cũ để so sánh
         $oldStatus = $post->status;
         $newStatus = PostStatus::from($data['status']);
-        
+
         $post->update([
             'title'       => $data['title'],
             'content'     => $data['content'],
@@ -165,7 +165,7 @@ class AdminPostController extends Controller
             try {
                 // Dispatch job để gửi email qua queue
                 SendPostApprovedEmail::dispatch($post);
-                
+
                 Log::info('Post approval email job dispatched', [
                     'post_id' => $post->id,
                     'user_email' => $post->user->email
@@ -176,8 +176,8 @@ class AdminPostController extends Controller
             }
         }
 
-        return redirect()->route('admin.posts.index')
-            ->with('success', 'Bài viết đã được cập nhật thành công!' . 
+        return to_route('admin.posts.index')
+            ->with('success', 'Bài viết đã được cập nhật thành công!' .
                 ($oldStatus !== PostStatus::APPROVED && $newStatus === PostStatus::APPROVED ? ' Email thông báo đã được gửi cho tác giả.' : ''));
     }
 

@@ -43,7 +43,7 @@ class User extends Authenticatable
 
     public function getNameAttribute(): string
     {
-        return  $this->first_name . ' ' . $this->last_name;
+        return  $this->last_name . ' ' . $this->first_name;
     }
 
     public function posts()

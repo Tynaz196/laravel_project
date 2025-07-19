@@ -49,12 +49,11 @@
                             <thead>
                                 <tr>
                                     <th width="60">STT</th>
-                                    <th>Tên</th>
+                                    <th>Họ tên</th>
                                     <th>Email</th>
-                                    <th width="100">Vai trò</th>
+                                    <th>Địa chỉ</th>
                                     <th width="120">Trạng thái</th>
-                                    <th width="150">Ngày tham gia</th>
-                                    <th width="200">Hành động</th>
+                                    <th width="150">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -69,4 +68,93 @@
 </div>
 @endsection
 
-@include('partials.admin-users-datatable-script')
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $('#adminUsersTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: "{{ route('admin.users.data') }}",
+            type: 'GET',
+            error: function (xhr, error, code) {
+                console.error('DataTables AJAX error:', error, code);
+                console.error('Response:', xhr.responseText);
+                alert('Lỗi khi tải dữ liệu: ' + xhr.responseText);
+            }
+        },
+        columns: [
+            {
+                data: null,
+                searchable: false,
+                orderable: false,
+                render: function (data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }
+            },
+            {
+                data: 'name',
+                name: 'last_name',
+                render: function(data, type, row) {
+                    return '<strong>' + data + '</strong>';
+                }
+            },
+            {
+                data: 'email',
+                name: 'email'
+            },
+            {
+                data: 'address',
+                name: 'address'
+            },
+            {
+                data: 'status_label',
+                name: 'status',
+                render: function(data, type, row) {
+                    return '<span class="badge ' + row.status_badge_class + '">' + data + '</span>';
+                }
+            },
+            {
+                data: 'actions',
+                name: 'actions',
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row) {
+                    // Kiểm tra role: 'admin' = admin, 'user' = user
+                    if (row.role === 'admin' || row.is_admin === true) {
+                        return '<span class="text-muted"><i class="fas fa-shield-alt"></i> Admin</span>';
+                    } else {
+                        return `
+                            <a href="/admin/users/${row.id}/edit" class="btn btn-sm btn-info" title="Chỉnh sửa">
+                                <i class="fas fa-edit"></i> Sửa
+                            </a>
+                        `;
+                    }
+                }
+            }
+        ],
+        language: {
+            "sProcessing": "Đang xử lý...",
+            "sLengthMenu": "Hiển thị _MENU_ mục",
+            "sZeroRecords": "Không tìm thấy dòng nào phù hợp",
+            "sInfo": "Đang hiển thị _START_ đến _END_ trong tổng số _TOTAL_ mục",
+            "sInfoEmpty": "Đang hiển thị 0 đến 0 trong tổng số 0 mục",
+            "sInfoFiltered": "(được lọc từ _MAX_ mục)",
+            "sInfoPostFix": "",
+            "sSearch": "Tìm kiếm:",
+            "sUrl": "",
+            "oPaginate": {
+                "sFirst": "Đầu",
+                "sPrevious": "Trước",
+                "sNext": "Tiếp",
+                "sLast": "Cuối"
+            }
+        },
+        responsive: true,
+        pageLength: 10,
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        order: [[1, 'asc']]
+    });
+});
+</script>
+@endpush

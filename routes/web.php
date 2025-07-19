@@ -59,6 +59,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/posts/{post}/edit', [App\Http\Controllers\Admin\AdminPostController::class, 'edit'])->name('posts.edit');
     Route::patch('/posts/{post}', [App\Http\Controllers\Admin\AdminPostController::class, 'update'])->name('posts.update');
 
+    // Admin Users Management
+    Route::get('users/data', [App\Http\Controllers\Admin\AdminUserController::class, 'data'])->name('users.data');
+    Route::get('users', [App\Http\Controllers\Admin\AdminUserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}/edit', [App\Http\Controllers\Admin\AdminUserController::class, 'edit'])->name('users.edit');
+    Route::patch('/users/{user}', [App\Http\Controllers\Admin\AdminUserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [App\Http\Controllers\Admin\AdminUserController::class, 'destroy'])->name('users.destroy');
+
     // Admin dashboard redirect
     Route::get('/', function () {
         return to_route('admin.posts.index');

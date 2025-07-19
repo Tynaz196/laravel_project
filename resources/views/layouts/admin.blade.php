@@ -137,6 +137,25 @@
                             </li>
                         </ul>
                     </li>
+
+                    <!-- Users Management -->
+                    <li class="nav-item {{ request()->routeIs('admin.users.*') ? 'menu-open' : '' }}">
+                        <a href="#" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>
+                                Quản lý tài khoản
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Danh sách tài khoản</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                     @endif
 
                     <!-- Divider -->
@@ -195,6 +214,16 @@
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap4.min.js"></script>
 <!-- Quill JS -->
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+{{-- <!-- CSRF Token Setup for AJAX -->
+<script>
+    // Setup CSRF token for all AJAX requests
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+</script> --}}
 
 @stack('scripts')
 </body>
